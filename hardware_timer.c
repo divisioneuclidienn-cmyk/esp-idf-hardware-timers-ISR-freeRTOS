@@ -56,20 +56,6 @@ void update_led(void * arg){
   }
 }
 
-void sampling(void * arg){
-  static uint8_t samples_counter = 0;
-  while(1){
-    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-    samples_counter++;
-
-    if(samples_counter < 9) { break; }
-    samples_counter = 0;
-
-    uint8_t average_value = 
-
-  }
-}
-
 void app_main(void)
 {
   ESP_LOGI(TAG, "app_main starting\n");
