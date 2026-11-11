@@ -53,7 +53,7 @@ QueueHandle_t sampledDataQueue = NULL; // traitement -> tâches utilisant la don
 // Génère une nombre pseudo-aléatoire et l'envoie sur une file freeRTOS
 void measure1(void * arg){
   TickType_t xLastWakeTime;
-  const TickType_t xFrequency = 10;
+  const TickType_t xFrequency = pdMS_TO_TICKS(10); // TICKS FREERTOS!!
   volatile BaseType_t xWasDelayed;
 
   xLastWakeTime = xTaskGetTickCount ();
@@ -62,7 +62,7 @@ void measure1(void * arg){
     xWasDelayed = xTaskDelayUntil(&xLastWakeTime, xFrequency); // Réveilla tâche à un temps précis qui comprend donc le temps d'exécution de la tâche
 
     uint64_t time = esp_timer_get_time();
-    float measurement1 = (float)(rand() % (MY_RAND_MAX - RAND_MIN + 1)) + RAND_MIN; // CONVERSION FLOAT PAS SUR. COMMENT FONCTIONNE UNE CONVERSION DE TYPE EN C?
+    float measurement1 = (float)(rand() % (MY_RAND_MAX - RAND_MIN + 1)) + RAND_MIN;
 
     raw_data_queue_msg_t measure1_msg = {
       .msg_type = MEASURE1,
@@ -77,7 +77,7 @@ void measure1(void * arg){
 
 void measure2(void * arg){
   TickType_t xLastWakeTime;
-  const TickType_t xFrequency = 10;
+  const TickType_t xFrequency = pdMS_TO_TICKS(10);
   volatile BaseType_t xWasDelayed;
 
   xLastWakeTime = xTaskGetTickCount ();
@@ -101,6 +101,7 @@ void measure2(void * arg){
 
 // Effectue une moyenne des mesures reçus en fonction de MEASUREx_AVERAGE_SAMPLES et l'envoie sur une file sampledDataQueue
 void dataProcessingMethod1(const raw_data_queue_msg_t * msg){
+  //Impossible d'appeler la fonction 2 fois en même temps à cause des static
   static float current_sum[3] = {0, 0, 0};
   static uint16_t current_data_transmitted_nb[3] = {0, 0, 0};
   static const uint16_t average_samples[3] = {
@@ -162,7 +163,6 @@ void useSampledData(void * arg){
   while(1){
     sampled_data_queue_msg_t sampled_data_queue_msg;
     xQueueReceive(sampledDataQueue, &sampled_data_queue_msg, portMAX_DELAY);
-    //ESP_LOGI(TAG, "Entering useSampledData function\n");
     float sampled_data = sampled_data_queue_msg.value;
 
     switch(sampled_data_queue_msg.msg_type){
@@ -190,7 +190,10 @@ void app_main(void){
   srand(time(NULL));
 
   rawDataQueue = xQueueCreate(10, sizeof(raw_data_queue_msg_t));
+  configASSERT(rawDataQueue != NULL);
+
   sampledDataQueue = xQueueCreate(10, sizeof(sampled_data_queue_msg_t));
+  configASSERT(sampledDataQueue != NULL);
 
   BaseType_ret = xTaskCreate(measure1, "measure1", 4096, NULL, 3, &measure1Task);
   configASSERT(BaseType_ret == pdTRUE);
@@ -218,3 +221,5 @@ void app_main(void){
 
 //Cohésion du code, fonctions/tâches avec responsabilité claire et définie
 //Couplage : Les différentes parties du programme doivent dépendre le moins possible les unes des autres
+
+//Ajouter un README.md
