@@ -212,7 +212,7 @@ void app_main(void){
 //Simulateur de centrale d'acquisition :
 // Structures de données de file avec infos importantes (temps, mesures)
 // Logs ESP-IDF
-// ESP_ERROR_CHECK
+// ESP_ERROR_CHECK fonctions
 // Modularité du code
 // documentation 
 

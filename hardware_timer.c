@@ -7,7 +7,7 @@
 #include <time.h>
 
 #define LED1 25
-#define RAND_MAX 10
+#define MY_RAND_MAX 10
 #define RAND_MIN 1
 
 static const char * TAG = "Hardware timer interrupt lesson";
@@ -28,7 +28,7 @@ static bool IRAM_ATTR timer_callback(gptimer_handle_t timer, const gptimer_alarm
 
   BaseType_t higherPriorityTaskWoken = pdFALSE;
 
-  int random_nb = (rand() % (RAND_MAX - RAND_MIN + 1)) + RAND_MIN;
+  int random_nb = (rand() % (MY_RAND_MAX - RAND_MIN + 1)) + RAND_MIN;
   xQueueSendFromISR(counter_queue, &random_nb, &higherPriorityTaskWoken);
 
 

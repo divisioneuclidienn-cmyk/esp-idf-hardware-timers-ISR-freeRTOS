@@ -44,3 +44,5 @@ void app_main(void){
 // SAR = Successive Approximation Register = décrit le fonctionnement de l'ADC
 // lecture par ADC bloquante car charge des condensateurs d'échantillonnages + N cycles d'horloges en fonctions de la résolution de l'ADC
 // mode DMA pour du non bloquant
+
+// calibrage de la tension avec adc_cali
